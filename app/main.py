@@ -11,5 +11,4 @@ if __name__ == '__main__':
         for provider_class in providers.PROVIDER_CLASSES:
             provider = provider_class()
             for res in provider.resources():
-                print(res)
                 writer.writerow(asdict(res))
