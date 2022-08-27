@@ -11,6 +11,16 @@ class ResourceTypes(str, Enum):
     LAMBDA = 'lambda'
     LOG_GROUP = 'loggroup'
     SECRET = 'secret'
+    BUCKET = 'bucket'
+    DYNAMODB = 'dynamodb'
+    RDS_CLUSTER = 'rds-cluster'
+    RDS_DB = 'rds-db'
+    EC2 = 'ec2'
+    SECURITY_GROUP = 'security-group'
+    ELB = 'elb'
+    ELB_V2 = 'elb-v2'
+    SQS = 'sqs'
+    SNS = 'sns'
 
 
 @dataclass
@@ -49,7 +59,7 @@ class ResourceProvider:
                  token_req: str,
                  token_resp: str,
                  items_prop: str,
-                 name_prop: str
+                 name_prop
                  ):
         self.res_type = res_type
         self.name_prop = name_prop
@@ -68,11 +78,17 @@ class ResourceProvider:
             resp = list_function(**req)
             for item in resp[self.items_prop]:
                 timelog.tick()
-                yield Resource(self.res_type, item[self.name_prop])
+                yield Resource(self.res_type, self.extract_name(item))
             token = resp.get(self.token_resp)
             if not token:
                 timelog.end()
                 break
+
+    def extract_name(self, item):
+        if callable(self.name_prop):
+            return self.name_prop(item)
+        else:
+            return item if isinstance(item, str) else item[self.name_prop]
 
 
 class LambdaProvider(ResourceProvider):
@@ -108,4 +124,103 @@ class SecretsProvider(ResourceProvider):
                          'Name')
 
 
-PROVIDER_CLASSES = [SecretsProvider, LambdaProvider, LoggroupProvider]
+class S3Provider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.BUCKET,
+                         's3',
+                         'list_buckets',
+                         'None',
+                         'None',
+                         'Buckets',
+                         'Name')
+
+
+class DynamodbProvider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.DYNAMODB,
+                         'dynamodb',
+                         'list_tables',
+                         'ExclusiveStartTableName',
+                         'LastEvaluatedTableName',
+                         'TableNames',
+                         '')
+
+
+class RdsClusterProvider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.RDS_CLUSTER,
+                         'rds',
+                         'describe_db_clusters',
+                         'Marker',
+                         'Marker',
+                         'DBClusters',
+                         'DBClusterIdentifier')
+
+
+class RdsDbInstanceProvider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.RDS_DB,
+                         'rds',
+                         'describe_db_instances',
+                         'Marker',
+                         'Marker',
+                         'DBInstances',
+                         'DBInstanceIdentifier')
+
+
+class SecurityGroupProvider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.SECURITY_GROUP,
+                         'ec2',
+                         'describe_security_groups',
+                         'NextToken',
+                         'NextToken',
+                         'SecurityGroups',
+                         'GroupName')
+
+
+class ElbProvider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.ELB,
+                         'elb',
+                         'describe_load_balancers',
+                         'Marker',
+                         'NextMarker',
+                         'LoadBalancerDescriptions',
+                         'LoadBalancerName')
+
+
+class Elb2Provider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.ELB_V2,
+                         'elbv2',
+                         'describe_load_balancers',
+                         'Marker',
+                         'NextMarker',
+                         'LoadBalancers',
+                         'LoadBalancerName')
+
+
+class SqsProvider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.SQS,
+                         'sqs',
+                         'list_queues',
+                         'NextToken',
+                         'NextToken',
+                         'QueueUrls',
+                         lambda item: item[item.rfind('/') + 1:])
+
+
+class SnsProvider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.SNS,
+                         'sns',
+                         'list_topics',
+                         'NextToken',
+                         'NextToken',
+                         'Topics',
+                         lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:])
+
+
+PROVIDER_CLASSES = [cls for cls in ResourceProvider.__subclasses__()]
