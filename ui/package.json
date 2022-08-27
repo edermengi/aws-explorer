@@ -46,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "@types/flexsearch": "^0.7.3",
     "@types/papaparse": "^5.3.4"
   }
 }
