@@ -4,8 +4,9 @@ import Papa, {ParseResult, ParseStepResult} from "papaparse";
 import {Document} from 'flexsearch';
 
 export interface Resource {
-    readonly type: string
-    readonly name: string
+    readonly rt: string         // resource type (lambda, ec2)
+    readonly rn: string         // resource name
+    readonly rg: string         // region
 }
 
 
@@ -18,12 +19,13 @@ const index = new Document({
         store: true,
         index: [
             {
-                field: "resourceType"
+                field: "rt"
             },
             {
-                field: "resourceName",
+                field: "rn",
             }
-        ]
+        ],
+        tag: "rg"
     }
 });
 
@@ -40,24 +42,25 @@ function loadResources() {
             if (resourceName && resourceType) {
                 resources.push({'label': resourceName, 'id': i++});
                 // @ts-ignore
-                index.add({id: i, resourceType: resourceType, resourceName: resourceName});
+                index.add({id: i, rt: resourceType, rn: resourceName, rg: 'eu-west-1'});
             }
         },
         complete() {
             console.log("parsed:", i);
-            console.log(index.search('lam', {enrich: true}));
+            console.log(index.search('test', {enrich: true, index: "rn", limit: 10}));
         }
     })
 }
 
 
 function doSearch(query: string): Resource[] {
-    const response = index.search(query, {enrich: true});
+    const response = index.search(query, 20, {enrich: true, index: "rn", limit: 20});
     if (response.length > 0) {
         const docs: Object[] = response[0].result;
+        console.log('Found', docs.length, 'results for ', query);
         return docs.map((doc) => {
             // @ts-ignore
-            return {type: doc.doc.resourceType, name: doc.doc.resourceName};
+            return {rt: doc.doc.rt, rn: doc.doc.rn, rg: doc.doc.rg};
         });
     }
     return [];
