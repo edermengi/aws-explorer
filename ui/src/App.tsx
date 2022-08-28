@@ -37,9 +37,9 @@ function makeAwsUrl(r: Resource | null): string {
         case 'elb-v2':
             return `https://${r.rg}.console.aws.amazon.com/ec2/v2/home?region=${r.rg}#LoadBalancers:search=${r.rn};sort=loadBalancerName`;
         case 'sqs':
-            let url = `https://${r.rg}.console.aws.amazon.com/sqs/v2/home?region=${r.rg}#/queues/${encodeURIComponent(r.rn)}`;
-            console.log(url);
-            return url;
+            return `https://${r.rg}.console.aws.amazon.com/sqs/v2/home?region=${r.rg}#/queues/${encodeURIComponent(r.rn)}`;
+        case 'sns':
+            return `https://${r.rg}.console.aws.amazon.com/sns/v3/home?region=${r.rg}#/topics`;
     }
     return ``;
 }
@@ -65,16 +65,16 @@ function App() {
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline/>
-            <Grid>
+            <h4>Type resource name to start searching</h4>
+            <Grid container>
                 <Autocomplete
+                    fullWidth
                     getOptionLabel={(option) =>
                         typeof option === 'string' ? option : option.rn
                     }
                     filterOptions={(x) => x}
                     options={options}
-                    autoComplete
                     includeInputInList
-                    filterSelectedOptions
                     value={value}
                     isOptionEqualToValue={(option, value) =>
                         option.rn === value.rn &&
@@ -86,7 +86,7 @@ function App() {
                     onInputChange={(event, newInputValue) => {
                         setInputValue(newInputValue);
                     }}
-                    renderInput={(params) => <TextField {...params} label=""/>}
+                    renderInput={(params) => <TextField {...params} label="AWS resource name"/>}
                     renderOption={(props, option) => (
                         <li {...props} key={option.rn + option.rt + option.rg}>
                             {option.rn}
