@@ -223,5 +223,4 @@ class SnsProvider(ResourceProvider):
                          lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:])
 
 
-
 PROVIDER_CLASSES = [cls for cls in ResourceProvider.__subclasses__()]
