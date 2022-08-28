@@ -176,7 +176,7 @@ class SecurityGroupProvider(ResourceProvider):
                          'NextToken',
                          'NextToken',
                          'SecurityGroups',
-                         'GroupName')
+                         lambda item: item['GroupId'] + "," + item["GroupName"])
 
 
 class ElbProvider(ResourceProvider):
