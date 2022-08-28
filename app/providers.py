@@ -7,6 +7,20 @@ from typing import Iterator
 import boto3
 
 
+@dataclass
+class Settings:
+    profile: str
+    region: str
+
+
+_settings: Settings = Settings('', '')
+
+
+def configure(profile: str, region: str):
+    _settings.profile = profile
+    _settings.region = region
+
+
 class ResourceTypes(str, Enum):
     LAMBDA = 'lambda'
     LOG_GROUP = 'loggroup'
@@ -30,8 +44,13 @@ class Resource:
 
 
 @functools.cache
-def aws_client(client: str):
-    return boto3.client(client)
+def session(profile: str):
+    return boto3.Session(profile_name=profile)
+
+
+@functools.cache
+def aws_client(client: str, profile: str, region: str):
+    return session(profile).client(client, region_name=region)
 
 
 class Timelog:
@@ -51,6 +70,7 @@ class Timelog:
 
 
 class ResourceProvider:
+    is_aws_global = False
 
     def __init__(self,
                  res_type: ResourceTypes,
@@ -67,7 +87,7 @@ class ResourceProvider:
         self.token_resp = token_resp
         self.token_req = token_req
         self.list_func = list_func
-        self.client = aws_client(client)
+        self.client = aws_client(client, _settings.profile, _settings.region)
 
     def resources(self) -> Iterator[Resource]:
         timelog = Timelog(self.res_type)
@@ -76,7 +96,7 @@ class ResourceProvider:
             req = {self.token_req: token} if token else {}
             list_function = getattr(self.client, self.list_func)
             resp = list_function(**req)
-            for item in resp[self.items_prop]:
+            for item in resp.get(self.items_prop) or []:
                 timelog.tick()
                 yield Resource(self.res_type, self.extract_name(item))
             token = resp.get(self.token_resp)
@@ -125,6 +145,8 @@ class SecretsProvider(ResourceProvider):
 
 
 class S3Provider(ResourceProvider):
+    is_aws_global = True
+
     def __init__(self):
         super().__init__(ResourceTypes.BUCKET,
                          's3',
