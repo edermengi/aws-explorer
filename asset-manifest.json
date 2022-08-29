@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.css": "/aws-explorer/static/css/main.31d6cfe0.css",
+    "main.js": "/aws-explorer/static/js/main.9f39bd5b.js",
+    "index.html": "/aws-explorer/index.html",
+    "main.9f39bd5b.js.map": "/aws-explorer/static/js/main.9f39bd5b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.31d6cfe0.css",
+    "static/js/main.9f39bd5b.js"
+  ]
+}

@@ -1,0 +1,9 @@
+lambda,a204837-jp-apiHealth-dev-euw1
+lambda,a204837-rts-dbSecretRotator-dev09-euw1
+lambda,a204837-wcng-dfx-irpm-jwt-refresh-dev03
+lambda,a204837-jc-irpmJwtRefresh-dev05-euw1
+lambda,custodian-elastic-ip-env-tag-enforcement
+lambda,a204837-rts-emailSender-dev19-euw1
+lambda,a204837-wcsmgmt-workflowSourceSearch-qa-euw1
+loggroup,/aws/rds/cluster/a204795-wc1-aurora-namematcher-cwl-development4/error
+loggroup,/aws/rds/cluster/a204795-wc1-aurora-namematcher-cwl-development4/slowquery
