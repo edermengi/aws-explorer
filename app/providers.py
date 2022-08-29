@@ -39,6 +39,8 @@ class ResourceTypes(str, Enum):
 
 @dataclass
 class Resource:
+    profile: str
+    region: str
     type: ResourceTypes
     name: str
 
@@ -87,7 +89,9 @@ class ResourceProvider:
         self.token_resp = token_resp
         self.token_req = token_req
         self.list_func = list_func
-        self.client = aws_client(client, _settings.profile, _settings.region)
+        self.profile = _settings.profile
+        self.region = _settings.region
+        self.client = aws_client(client, self.profile, self.region)
 
     def resources(self) -> Iterator[Resource]:
         timelog = Timelog(self.res_type)
@@ -98,7 +102,7 @@ class ResourceProvider:
             resp = list_function(**req)
             for item in resp.get(self.items_prop) or []:
                 timelog.tick()
-                yield Resource(self.res_type, self.extract_name(item))
+                yield Resource(self.profile, self.region, self.res_type, self.extract_name(item))
             token = resp.get(self.token_resp)
             if not token:
                 timelog.end()

@@ -9,13 +9,13 @@ if __name__ == '__main__':
     profiles = envs.AWS_PROFILES.split(',')
     regions = envs.AWS_REGIONS.split(',')
 
-    for profile in profiles:
-        for rno, region in enumerate(regions):
-            print(f'Processing {profile} {region}')
-            providers.configure(profile, region)
-            with open(f'../ui/public/{profile}-{region}.local.csv', 'w', newline='') as f:
-                fieldnames = ['type', 'name']
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
+    with open(f'./resources.local.csv', 'w', newline='') as f:
+        fieldnames = ['profile', 'region', 'type', 'name']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        for profile in profiles:
+            for rno, region in enumerate(regions):
+                print(f'Processing {profile} {region}')
+                providers.configure(profile, region)
 
                 for provider_class in providers.PROVIDER_CLASSES:
                     # include global resource into the first region file

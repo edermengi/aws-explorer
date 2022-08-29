@@ -34,7 +34,7 @@ function loadResources() {
 
     let i = 1;
     resources.length = 0;
-    Papa.parse('/data.local.csv', {
+    Papa.parse('/a-worldcheck-preprod-eu-west-1.local.csv', {
         download: true,
         step: function (row: ParseStepResult<Resource>) {
             // @ts-ignore
