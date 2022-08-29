@@ -65,8 +65,8 @@ class Timelog:
             print(f'Retrieved {self.count} {self.res_tye}s so far...')
 
     def end(self):
-        end = datetime.datetime.now().timestamp()
-        print(f'Retrieved {self.count} {self.res_tye}s in {end - self.start}s')
+        elapsed = datetime.datetime.now().timestamp() - self.start
+        print(f'Retrieved {self.count} {self.res_tye}s in {elapsed:.2f}s')
 
 
 class ResourceProvider:

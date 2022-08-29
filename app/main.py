@@ -11,6 +11,7 @@ if __name__ == '__main__':
 
     for profile in profiles:
         for rno, region in enumerate(regions):
+            print(f'Processing {profile} {region}')
             providers.configure(profile, region)
             with open(f'../ui/public/{profile}-{region}.local.csv', 'w', newline='') as f:
                 fieldnames = ['type', 'name']
