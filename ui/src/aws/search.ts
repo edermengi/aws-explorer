@@ -38,7 +38,6 @@ function loadResources(file: LocalFile) {
     let i = 1;
     Papa.parse(file, {
         step: function (row: ParseStepResult<Resource>) {
-            console.log(row);
             // @ts-ignore
             const [profile, region, resourceType, resourceName] = row.data;
             if (resourceName) {
