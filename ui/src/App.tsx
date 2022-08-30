@@ -10,8 +10,6 @@ const darkTheme = createTheme({
     },
 });
 
-loadResources();
-
 
 function makeAwsUrl(r: Resource | null): string {
     console.log(r);
@@ -44,6 +42,7 @@ function makeAwsUrl(r: Resource | null): string {
     return ``;
 }
 
+
 function App() {
     const [value, setValue] = useState<Resource | null>(null);
     const [inputValue, setInputValue] = useState('');
@@ -62,10 +61,17 @@ function App() {
         },
         [value]);
 
+    const onFileChange = (event: any) => {
+        let file = event.target.files[0];
+        console.log(file);
+        loadResources(file);
+    };
+
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline/>
             <h4>Type resource name to start searching</h4>
+            <input type="file" onChange={onFileChange}/>
             <Grid container>
                 <Autocomplete
                     fullWidth

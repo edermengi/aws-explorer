@@ -9,7 +9,7 @@ if __name__ == '__main__':
     profiles = envs.AWS_PROFILES.split(',')
     regions = envs.AWS_REGIONS.split(',')
 
-    with open(f'./resources.local.csv', 'w', newline='') as f:
+    with open(f'~/resources.local.csv', 'w', newline='') as f:
         fieldnames = ['profile', 'region', 'type', 'name']
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         for profile in profiles:
