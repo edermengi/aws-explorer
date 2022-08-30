@@ -1,7 +1,7 @@
 {
   "name": "aws-navigator",
   "version": "0.1.0",
-  "homepage": "https://edermengi.github.io/aws-explorer",
+  "homepage": "https://edermengi.github.io/aws-navigator",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.0",
