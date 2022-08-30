@@ -63,8 +63,9 @@ function App() {
 
     const onFileChange = (event: any) => {
         let file = event.target.files[0];
-        console.log(file);
-        loadResources(file);
+        if (file) {
+            loadResources(file);
+        }
     };
 
     return (
