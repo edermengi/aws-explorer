@@ -29,7 +29,7 @@ function makeAwsUrl(r: Resource | null): string {
             return `https://${r.rg}.console.aws.amazon.com/sns/v3/home?region=${r.rg}#/topics`;
         case 'api':
             return `https://${r.rg}.console.aws.amazon.com/apigateway/home?region=${r.rg}#/apis/${r.rn.split(',')[0]}/resources`;
-        case 'apiv2':
+        case 'api-v2':
             return `https://${r.rg}.console.aws.amazon.com/apigateway/home?region=${r.rg}#/apis/${r.rn.split(',')[0]}/routes`;
     }
     return ``;

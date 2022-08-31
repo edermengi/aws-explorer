@@ -118,7 +118,8 @@ _provider_args = [
     ('sqs',            'sqs',             'list_queues',              'NextToken',                'NextToken',              'QueueUrls',                 lambda item: item[item.rfind('/') + 1:]),
     ('sns',            'sns',             'list_topics',              'NextToken',                'NextToken',              'Topics',                    lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:]),
     ('api',            'apigateway',      'get_rest_apis',            'position',                 'position',               'items',                     lambda item: item['id'] + "," + item['name']),
-    ('api-v2',         'apigatewayv2',    'get_apis',                 'NextToken',                'NextToken',              'Items',                     lambda item: item['ApiId'] + "," + item['Name'])
+    ('api-v2',         'apigatewayv2',    'get_apis',                 'NextToken',                'NextToken',              'Items',                     lambda item: item['ApiId'] + "," + item['Name']),
+    ('waf-ip-set',     'waf',             'list_ip_sets',             'NextMarker',               'NextMarker',             'IPSets',                    lambda item: item['Name'] + "," + item['IPSetId']),
 ]
 # @formatter:on
 
