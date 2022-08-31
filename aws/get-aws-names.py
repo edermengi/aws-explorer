@@ -39,7 +39,7 @@ class ResourceTypes(str, Enum):
     SQS = 'sqs'
     SNS = 'sns'
     API = 'api'
-    APIV2 = 'apiv2'
+    API_V2 = 'api-v2'
 
     @classmethod
     def list(cls):
@@ -271,7 +271,7 @@ class RestApiProvider(ResourceProvider):
 
 class ApiGatewayV2Provider(ResourceProvider):
     def __init__(self):
-        super().__init__(ResourceTypes.APIV2,
+        super().__init__(ResourceTypes.API_V2,
                          'apigatewayv2',
                          'get_apis',
                          'NextToken',
