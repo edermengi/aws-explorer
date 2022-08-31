@@ -26,8 +26,7 @@ function App() {
             setOptions(doSearch(inputValue));
         },
         [inputValue]);
-    useEffect(
-        () => {
+    useEffect(        () => {
             if (value) {
                 navigateToResource(value);
             }
