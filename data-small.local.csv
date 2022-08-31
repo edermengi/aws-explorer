@@ -1,7 +1,0 @@
-lambda,my-lambda-name-1
-lambda,lambdaNameInCapitalCase
-lambda,another-awesomeLambda
-loggroup,/aws/rds/cluster/cluster-d/error
-loggroup,/aws/lambda/log/my-lambda-name-1
-loggroup,/aws/lambda/log/lambdaNameInCapitalCase
-bucket,my-bucket-name
