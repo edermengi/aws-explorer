@@ -2,14 +2,7 @@
 import Papa, {LocalFile, ParseResult, ParseStepResult} from "papaparse";
 // @ts-ignore
 import {Document} from 'flexsearch';
-
-export interface Resource {
-    readonly rt: string         // resource type (lambda, ec2)
-    readonly rn: string         // resource name
-    readonly rg: string         // region
-    readonly pr: string         // profile
-}
-
+import {Resource} from "./interfaces";
 
 function newIndex() {
     return new Document({
@@ -37,6 +30,7 @@ function loadResources(file: LocalFile) {
     index = newIndex();
     let i = 1;
     Papa.parse(file, {
+        worker: true,
         step: function (row: ParseStepResult<Resource>) {
             // @ts-ignore
             const [profile, region, resourceType, resourceName] = row.data;
@@ -48,8 +42,9 @@ function loadResources(file: LocalFile) {
         complete() {
             console.log("parsed:", i, "records");
             console.log("Searching 'lambda'", index.search('test', {enrich: true, index: "rn", limit: 10}));
+            // return exportToStorage();
         }
-    })
+    });
 }
 
 
@@ -64,6 +59,16 @@ function doSearch(query: string): Resource[] {
         });
     }
     return [];
+}
+
+async function exportToStorage() {
+    return index.export(function (key, data) {
+        console.log(key);
+        return new Promise(function (resolve) {
+            // @ts-ignore
+            resolve();
+        });
+    });
 }
 
 export {
