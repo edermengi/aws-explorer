@@ -39,6 +39,7 @@ class ResourceTypes(str, Enum):
     SQS = 'sqs'
     SNS = 'sns'
     API = 'api'
+    APIV2 = 'apiv2'
 
     @classmethod
     def list(cls):
@@ -266,6 +267,17 @@ class RestApiProvider(ResourceProvider):
                          'position',
                          'items',
                          lambda item: item['id'] + "," + item['name'])
+
+
+class ApiGatewayV2Provider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.APIV2,
+                         'apigatewayv2',
+                         'get_apis',
+                         'NextToken',
+                         'NextToken',
+                         'Items',
+                         lambda item: item['ApiId'] + "," + item['Name'])
 
 
 def _all_providers() -> List[Type[ResourceProvider]]:
