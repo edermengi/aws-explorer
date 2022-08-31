@@ -38,6 +38,7 @@ class ResourceTypes(str, Enum):
     ELB_V2 = 'elb-v2'
     SQS = 'sqs'
     SNS = 'sns'
+    API = 'api'
 
     @classmethod
     def list(cls):
@@ -254,6 +255,17 @@ class SnsProvider(ResourceProvider):
                          'NextToken',
                          'Topics',
                          lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:])
+
+
+class RestApiProvider(ResourceProvider):
+    def __init__(self):
+        super().__init__(ResourceTypes.API,
+                         'apigateway',
+                         'get_rest_apis',
+                         'position',
+                         'position',
+                         'items',
+                         lambda item: item['id'] + "," + item['name'])
 
 
 def _all_providers() -> List[Type[ResourceProvider]]:
