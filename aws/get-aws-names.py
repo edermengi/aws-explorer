@@ -1,8 +1,11 @@
+import argparse
+import csv
 import datetime
 import functools
+from dataclasses import asdict
 from dataclasses import dataclass
 from enum import Enum
-from typing import Iterator
+from typing import Iterator, List, Type
 
 import boto3
 
@@ -16,9 +19,9 @@ class Settings:
 _settings: Settings = Settings('', '')
 
 
-def configure(profile: str, region: str):
-    _settings.profile = profile
-    _settings.region = region
+def configure(pr: str, rg: str):
+    _settings.profile = pr
+    _settings.region = rg
 
 
 class ResourceTypes(str, Enum):
@@ -36,6 +39,10 @@ class ResourceTypes(str, Enum):
     SQS = 'sqs'
     SNS = 'sns'
 
+    @classmethod
+    def list(cls):
+        return list(map(lambda c: c.value, cls))
+
 
 @dataclass
 class Resource:
@@ -46,29 +53,29 @@ class Resource:
 
 
 @functools.cache
-def session(profile: str):
-    return boto3.Session(profile_name=profile)
+def session(profile_name: str):
+    return boto3.Session(profile_name=profile_name)
 
 
 @functools.cache
-def aws_client(client: str, profile: str, region: str):
-    return session(profile).client(client, region_name=region)
+def aws_client(client: str, profile_name: str, region_name: str):
+    return session(profile_name).client(client, region_name=region_name)
 
 
-class Timelog:
+class ProgressLog:
     def __init__(self, res_tye: str):
-        self.res_tye = res_tye
+        self.res_type = res_tye
         self.start = datetime.datetime.now().timestamp()
         self.count = 0
 
     def tick(self):
         self.count += 1
         if not self.count % 1000:
-            print(f'Retrieved {self.count} {self.res_tye}s so far...')
+            print(f'Retrieved {self.count} {self.res_type} names so far...')
 
     def end(self):
         elapsed = datetime.datetime.now().timestamp() - self.start
-        print(f'Retrieved {self.count} {self.res_tye}s in {elapsed:.2f}s')
+        print(f'Retrieved {self.count} {self.res_type} names in {elapsed:.2f}s')
 
 
 class ResourceProvider:
@@ -94,18 +101,18 @@ class ResourceProvider:
         self.client = aws_client(client, self.profile, self.region)
 
     def resources(self) -> Iterator[Resource]:
-        timelog = Timelog(self.res_type)
+        progress = ProgressLog(self.res_type)
         token = None
         while True:
             req = {self.token_req: token} if token else {}
             list_function = getattr(self.client, self.list_func)
             resp = list_function(**req)
             for item in resp.get(self.items_prop) or []:
-                timelog.tick()
+                progress.tick()
                 yield Resource(self.profile, self.region, self.res_type, self.extract_name(item))
             token = resp.get(self.token_resp)
             if not token:
-                timelog.end()
+                progress.end()
                 break
 
     def extract_name(self, item):
@@ -249,4 +256,41 @@ class SnsProvider(ResourceProvider):
                          lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:])
 
 
-PROVIDER_CLASSES = [cls for cls in ResourceProvider.__subclasses__()]
+def _all_providers() -> List[Type[ResourceProvider]]:
+    return [cls for cls in ResourceProvider.__subclasses__()]
+
+
+def _parse_args():
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--profiles', type=str, required=True, nargs='+')
+    parser.add_argument('--regions', type=str, required=True, nargs='+')
+    parser.add_argument('--output-file', type=str, required=True)
+    parser.add_argument('--types', type=str, required=False, choices=ResourceTypes.list(), nargs='+')
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = _parse_args()
+    profiles = args.profiles
+    regions = args.regions
+    types = args.types
+    output_file = args.output_file
+
+    with open(output_file, 'w', newline='') as f:
+        fieldnames = ['profile', 'region', 'type', 'name']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        for profile in profiles:
+            for rno, region in enumerate(regions):
+                print(f'Processing AWS profile [{profile}] and region [{region}]')
+                configure(profile, region)
+
+                for provider_class in _all_providers():
+                    # include global resource into the first region file
+                    if rno and provider_class.is_aws_global:
+                        continue
+                    # noinspection PyArgumentList
+                    provider = provider_class()
+                    if types and provider.res_type not in types:
+                        continue
+                    for res in provider.resources():
+                        writer.writerow(asdict(res))
