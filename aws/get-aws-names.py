@@ -67,10 +67,10 @@ class ResourceProvider:
                  token_req: str,
                  token_resp: str,
                  items_prop: str,
-                 name_prop
+                 name_mapper
                  ):
         self.res_type = res_type
-        self.name_prop = name_prop
+        self.name_mapper = name_mapper
         self.items_prop = items_prop
         self.token_resp = token_resp
         self.token_req = token_req
@@ -88,33 +88,27 @@ class ResourceProvider:
             resp = list_function(**req)
             for item in resp.get(self.items_prop) or []:
                 progress.tick()
-                yield Resource(self.profile, self.region, self.res_type, self.extract_name(item))
+                yield Resource(self.profile, self.region, self.res_type, self.name_mapper(item))
             token = resp.get(self.token_resp)
             if not token:
                 progress.end()
                 break
-
-    def extract_name(self, item):
-        if callable(self.name_prop):
-            return self.name_prop(item)
-        else:
-            return item if isinstance(item, str) else item[self.name_prop]
 
 
 # @formatter:off
 _provider_args = [
     # res_type          client             list_function               req_token                    resp_token                  items                       name
     # _________        __________         _____________________       ___________                  _____________             ___________                 _______________
-    ('lambda',         'lambda',          'list_functions',           'Marker',                   'NextMarker',             'Functions',                 'FunctionName'),
-    ('loggroup',       'logs',            'describe_log_groups',      'nextToken',                'nextToken',              'logGroups',                 'logGroupName'),
-    ('secret',         'secretsmanager',  'list_secrets',             'NextToken',                'NextToken',              'SecretList',                'Name'),
-    ('bucket',         's3',              'list_buckets',             'None',                     'None',                   'Buckets',                   'Name'),
-    ('dynamodb',       'dynamodb',        'list_tables',              'ExclusiveStartTableName',  'LastEvaluatedTableName', 'TableNames',                ''),
-    ('rds-cluster',    'rds',             'describe_db_clusters',     'Marker',                   'Marker',                 'DBClusters',                'DBClusterIdentifier'),
-    ('rds-db',         'rds',             'describe_db_instances',    'Marker',                   'Marker',                 'DBInstances',               'DBInstanceIdentifier'),
+    ('lambda',         'lambda',          'list_functions',           'Marker',                   'NextMarker',             'Functions',                 lambda item: item['FunctionName']),
+    ('loggroup',       'logs',            'describe_log_groups',      'nextToken',                'nextToken',              'logGroups',                 lambda item: item['logGroupName']),
+    ('secret',         'secretsmanager',  'list_secrets',             'NextToken',                'NextToken',              'SecretList',                lambda item: item['Name']),
+    ('bucket',         's3',              'list_buckets',             'None',                     'None',                   'Buckets',                   lambda item: item['Name']),
+    ('dynamodb',       'dynamodb',        'list_tables',              'ExclusiveStartTableName',  'LastEvaluatedTableName', 'TableNames',                lambda item: item),
+    ('rds-cluster',    'rds',             'describe_db_clusters',     'Marker',                   'Marker',                 'DBClusters',                lambda item: item['DBClusterIdentifier']),
+    ('rds-db',         'rds',             'describe_db_instances',    'Marker',                   'Marker',                 'DBInstances',               lambda item: item['DBInstanceIdentifier']),
     ('security-group', 'ec2',             'describe_security_groups', 'NextToken',                'NextToken',              'SecurityGroups',            lambda item: item['GroupId'] + "," + item["GroupName"]),
-    ('elb',            'elb',             'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancerDescriptions',  'LoadBalancerName'),
-    ('elbv2',          'elbv2',           'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancers',             'LoadBalancerName'),
+    ('elb',            'elb',             'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancerDescriptions',  lambda item: item['LoadBalancerName']),
+    ('elbv2',          'elbv2',           'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancers',             lambda item: item['LoadBalancerName']),
     ('sqs',            'sqs',             'list_queues',              'NextToken',                'NextToken',              'QueueUrls',                 lambda item: item[item.rfind('/') + 1:]),
     ('sns',            'sns',             'list_topics',              'NextToken',                'NextToken',              'Topics',                    lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:]),
     ('api',            'apigateway',      'get_rest_apis',            'position',                 'position',               'items',                     lambda item: item['id'] + "," + item['name']),
