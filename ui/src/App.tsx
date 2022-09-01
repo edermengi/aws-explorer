@@ -59,7 +59,8 @@ function App() {
                     isOptionEqualToValue={(option, value) =>
                         option.rn === value.rn &&
                         option.rt === value.rt &&
-                        option.rg === value.rg}
+                        option.rg === value.rg &&
+                        option.pr === value.pr}
                     onChange={(event: any, newValue: Resource | null) => {
                         setValue(newValue);
                     }}
