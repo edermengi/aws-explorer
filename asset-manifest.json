@@ -1,12 +1,12 @@
 {
   "files": {
     "main.css": "/aws-navigator/static/css/main.31d6cfe0.css",
-    "main.js": "/aws-navigator/static/js/main.6019ecb4.js",
+    "main.js": "/aws-navigator/static/js/main.fb61c36e.js",
     "index.html": "/aws-navigator/index.html",
-    "main.6019ecb4.js.map": "/aws-navigator/static/js/main.6019ecb4.js.map"
+    "main.fb61c36e.js.map": "/aws-navigator/static/js/main.fb61c36e.js.map"
   },
   "entrypoints": [
     "static/css/main.31d6cfe0.css",
-    "static/js/main.6019ecb4.js"
+    "static/js/main.fb61c36e.js"
   ]
 }
