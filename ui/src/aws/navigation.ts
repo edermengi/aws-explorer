@@ -33,6 +33,8 @@ function makeAwsUrl(r: Resource | null): string {
             return `https://${r.rg}.console.aws.amazon.com/apigateway/home?region=${r.rg}#/apis/${r.rn.split(',')[0]}/routes`;
         case 'web-acl':
             return `https://us-east-1.console.aws.amazon.com/wafv2/homev2/web-acl/${r.rn.split(',')[0]}/${r.rn.split(',')[1]}/overview?region=${r.rg}`;
+        case 'waf-ip-set':
+            return `https://us-east-1.console.aws.amazon.com/wafv2/homev2/ip-set/${r.rn.split(',')[0]}/${r.rn.split(',')[1]}?region=${r.rg}`;
     }
     return ``;
 }
