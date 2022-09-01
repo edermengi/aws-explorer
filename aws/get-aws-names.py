@@ -153,7 +153,6 @@ if __name__ == '__main__':
                     # include global resource into the first region file
                     if rno and provider.is_aws_global:
                         continue
-                    # noinspection PyArgumentList
                     if types and provider.res_type not in types:
                         continue
                     for res in provider.resources():
