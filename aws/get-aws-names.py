@@ -67,7 +67,8 @@ class ResourceProvider:
                  token_req: str,
                  token_resp: str,
                  items_prop: str,
-                 name_mapper
+                 name_mapper,
+                 list_func_args: dict = None
                  ):
         self.res_type = res_type
         self.name_mapper = name_mapper
@@ -77,6 +78,7 @@ class ResourceProvider:
         self.list_func = list_func
         self.profile = _settings.profile
         self.region = _settings.region
+        self.list_func_args = list_func_args or {}
         self.client = aws_client(client, self.profile, self.region)
 
     def resources(self) -> Iterator[Resource]:
@@ -85,7 +87,7 @@ class ResourceProvider:
         while True:
             req = {self.token_req: token} if token else {}
             list_function = getattr(self.client, self.list_func)
-            resp = list_function(**req)
+            resp = list_function(**{**req, **self.list_func_args})
             for item in resp.get(self.items_prop) or []:
                 progress.tick()
                 yield Resource(self.profile, self.region, self.res_type, self.name_mapper(item))
@@ -108,12 +110,12 @@ _provider_args = [
     ('rds-db',         'rds',             'describe_db_instances',    'Marker',                   'Marker',                 'DBInstances',               lambda item: item['DBInstanceIdentifier']),
     ('security-group', 'ec2',             'describe_security_groups', 'NextToken',                'NextToken',              'SecurityGroups',            lambda item: item['GroupId'] + "," + item["GroupName"]),
     ('elb',            'elb',             'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancerDescriptions',  lambda item: item['LoadBalancerName']),
-    ('elbv2',          'elbv2',           'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancers',             lambda item: item['LoadBalancerName']),
+    ('elb-v2',         'elbv2',           'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancers',             lambda item: item['LoadBalancerName']),
     ('sqs',            'sqs',             'list_queues',              'NextToken',                'NextToken',              'QueueUrls',                 lambda item: item[item.rfind('/') + 1:]),
     ('sns',            'sns',             'list_topics',              'NextToken',                'NextToken',              'Topics',                    lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:]),
     ('api',            'apigateway',      'get_rest_apis',            'position',                 'position',               'items',                     lambda item: item['id'] + "," + item['name']),
     ('api-v2',         'apigatewayv2',    'get_apis',                 'NextToken',                'NextToken',              'Items',                     lambda item: item['ApiId'] + "," + item['Name']),
-    ('waf-ip-set',     'waf',             'list_ip_sets',             'NextMarker',               'NextMarker',             'IPSets',                    lambda item: item['Name'] + "," + item['IPSetId']),
+    ('web-acl',        'wafv2',           'list_web_acls',            'NextMarker',               'NextMarker',             'WebACLs',                   lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
 ]
 # @formatter:on
 
