@@ -58,10 +58,9 @@ class ProgressLog:
 
 
 class ResourceProvider:
-    is_aws_global = False
-
     def __init__(self,
                  res_type: str,
+                 is_global: bool,
                  client: str,
                  list_func: str,
                  token_req: str,
@@ -71,6 +70,7 @@ class ResourceProvider:
                  list_func_args: dict = None
                  ):
         self.res_type = res_type
+        self.is_global = is_global
         self.name_mapper = name_mapper
         self.items_prop = items_prop
         self.token_resp = token_resp
@@ -99,24 +99,24 @@ class ResourceProvider:
 
 # @formatter:off
 _provider_args = [
-    # res_type          client             list_function               req_token                    resp_token                  items                       name
-    # _________        __________         _____________________       ___________                  _____________             ___________                 _______________
-    ('lambda',         'lambda',          'list_functions',           'Marker',                   'NextMarker',             'Functions',                 lambda item: item['FunctionName']),
-    ('loggroup',       'logs',            'describe_log_groups',      'nextToken',                'nextToken',              'logGroups',                 lambda item: item['logGroupName']),
-    ('secret',         'secretsmanager',  'list_secrets',             'NextToken',                'NextToken',              'SecretList',                lambda item: item['Name']),
-    ('bucket',         's3',              'list_buckets',             'None',                     'None',                   'Buckets',                   lambda item: item['Name']),
-    ('dynamodb',       'dynamodb',        'list_tables',              'ExclusiveStartTableName',  'LastEvaluatedTableName', 'TableNames',                lambda item: item),
-    ('rds-cluster',    'rds',             'describe_db_clusters',     'Marker',                   'Marker',                 'DBClusters',                lambda item: item['DBClusterIdentifier']),
-    ('rds-db',         'rds',             'describe_db_instances',    'Marker',                   'Marker',                 'DBInstances',               lambda item: item['DBInstanceIdentifier']),
-    ('security-group', 'ec2',             'describe_security_groups', 'NextToken',                'NextToken',              'SecurityGroups',            lambda item: item['GroupId'] + "," + item["GroupName"]),
-    ('elb',            'elb',             'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancerDescriptions',  lambda item: item['LoadBalancerName']),
-    ('elb-v2',         'elbv2',           'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancers',             lambda item: item['LoadBalancerName']),
-    ('sqs',            'sqs',             'list_queues',              'NextToken',                'NextToken',              'QueueUrls',                 lambda item: item[item.rfind('/') + 1:]),
-    ('sns',            'sns',             'list_topics',              'NextToken',                'NextToken',              'Topics',                    lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:]),
-    ('api',            'apigateway',      'get_rest_apis',            'position',                 'position',               'items',                     lambda item: item['id'] + "," + item['name']),
-    ('api-v2',         'apigatewayv2',    'get_apis',                 'NextToken',                'NextToken',              'Items',                     lambda item: item['ApiId'] + "," + item['Name']),
-    ('web-acl',        'wafv2',           'list_web_acls',            'NextMarker',               'NextMarker',             'WebACLs',                   lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
-    ('waf-ip-set',     'wafv2',           'list_ip_sets',             'NextMarker',               'NextMarker',             'IPSets',                    lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
+    # res_type      global   client             list_function               req_token                    resp_token                  items                       name
+    # _________       ___   __________         _____________________       ___________                  _____________             ___________                 _______________
+    ('lambda',         0,   'lambda',          'list_functions',           'Marker',                   'NextMarker',             'Functions',                 lambda item: item['FunctionName']),
+    ('loggroup',       0,   'logs',            'describe_log_groups',      'nextToken',                'nextToken',              'logGroups',                 lambda item: item['logGroupName']),
+    ('secret',         0,   'secretsmanager',  'list_secrets',             'NextToken',                'NextToken',              'SecretList',                lambda item: item['Name']),
+    ('bucket',         1,   's3',              'list_buckets',             'None',                     'None',                   'Buckets',                   lambda item: item['Name']),
+    ('dynamodb',       0,   'dynamodb',        'list_tables',              'ExclusiveStartTableName',  'LastEvaluatedTableName', 'TableNames',                lambda item: item),
+    ('rds-cluster',    0,   'rds',             'describe_db_clusters',     'Marker',                   'Marker',                 'DBClusters',                lambda item: item['DBClusterIdentifier']),
+    ('rds-db',         0,   'rds',             'describe_db_instances',    'Marker',                   'Marker',                 'DBInstances',               lambda item: item['DBInstanceIdentifier']),
+    ('security-group', 0,   'ec2',             'describe_security_groups', 'NextToken',                'NextToken',              'SecurityGroups',            lambda item: item['GroupId'] + "," + item["GroupName"]),
+    ('elb',            0,   'elb',             'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancerDescriptions',  lambda item: item['LoadBalancerName']),
+    ('elb-v2',         0,   'elbv2',           'describe_load_balancers',  'Marker',                   'NextMarker',             'LoadBalancers',             lambda item: item['LoadBalancerName']),
+    ('sqs',            0,   'sqs',             'list_queues',              'NextToken',                'NextToken',              'QueueUrls',                 lambda item: item[item.rfind('/') + 1:]),
+    ('sns',            0,   'sns',             'list_topics',              'NextToken',                'NextToken',              'Topics',                    lambda item: item['TopicArn'][item['TopicArn'].rfind(':') + 1:]),
+    ('api',            0,   'apigateway',      'get_rest_apis',            'position',                 'position',               'items',                     lambda item: item['id'] + "," + item['name']),
+    ('api-v2',         0,   'apigatewayv2',    'get_apis',                 'NextToken',                'NextToken',              'Items',                     lambda item: item['ApiId'] + "," + item['Name']),
+    ('web-acl',        0,   'wafv2',           'list_web_acls',            'NextMarker',               'NextMarker',             'WebACLs',                   lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
+    ('waf-ip-set',     0,   'wafv2',           'list_ip_sets',             'NextMarker',               'NextMarker',             'IPSets',                    lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
 ]
 # @formatter:on
 
@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
                 for provider in _all_providers():
                     # include global resource into the first region file
-                    if rno and provider.is_aws_global:
+                    if rno and provider.is_global:
                         continue
                     if types and provider.res_type not in types:
                         continue
