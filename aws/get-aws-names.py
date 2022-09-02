@@ -126,11 +126,11 @@ def _all_providers() -> List[ResourceProvider]:
 
 
 def _parse_args():
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--profiles', type=str, required=True, nargs='+')
-    parser.add_argument('--regions', type=str, required=True, nargs='+')
-    parser.add_argument('--output-file', type=str, required=True)
-    parser.add_argument('--types', type=str, required=False, nargs='+')
+    parser = argparse.ArgumentParser(description='Store AWS resources names to CSV file')
+    parser.add_argument('--profiles', type=str, required=True, nargs='+', help='AWS profiles')
+    parser.add_argument('--regions', type=str, required=True, nargs='+', help="AWS regions")
+    parser.add_argument('--output-file', type=str, required=True, help='Output CSV file')
+    parser.add_argument('--types', type=str, required=False, nargs='+', help='Filter resource types (lambda, ec2, ..)')
     return parser.parse_args()
 
 
