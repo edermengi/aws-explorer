@@ -12,7 +12,7 @@ export default function MenuBar({onFileChange}: MenuBarProps) {
         <Box sx={{flexGrow: 1}}>
             <Toolbar>
                 <Typography component="div" sx={{flexGrow: 1}}>
-                    <Button variant="contained" component="label" startIcon={<FileOpen/>}>
+                    <Button variant="outlined" component="label" startIcon={<FileOpen/>}>
                         Open CSV file with names
                         <input type="file" hidden onChange={onFileChange} accept=".zip, .csv, .tsv"/>
                     </Button>
