@@ -1,9 +1,24 @@
 import React, {useEffect, useState} from 'react';
-import './App.css';
-import {Autocomplete, Chip, createTheme, CssBaseline, Grid, TextField, ThemeProvider} from "@mui/material";
+import {
+    Autocomplete,
+    Box,
+    Button,
+    Chip,
+    createTheme,
+    CssBaseline,
+    Grid,
+    IconButton,
+    TextField,
+    ThemeProvider,
+    Toolbar,
+    Tooltip,
+    Typography
+} from "@mui/material";
 import {doSearch, loadResources} from "./aws/search";
 import {navigateToResource} from "./aws/navigation";
 import {Resource} from "./aws/interfaces";
+import {FileOpen, GitHub} from "@mui/icons-material";
+import InfoButton from "./components/info";
 
 
 const darkTheme = createTheme({
@@ -11,9 +26,6 @@ const darkTheme = createTheme({
         mode: 'dark',
     },
 });
-
-const openRequest = window.indexedDB.open('resources-db', 1);
-console.log(openRequest);
 
 
 function App() {
@@ -26,7 +38,7 @@ function App() {
             setOptions(doSearch(inputValue));
         },
         [inputValue]);
-    useEffect(        () => {
+    useEffect(() => {
             if (value) {
                 navigateToResource(value);
             }
@@ -44,8 +56,7 @@ function App() {
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline/>
-            <h4>Type resource name to start searching</h4>
-            <input type="file" onChange={onFileChange} accept=".zip, .csv, .tsv"/>
+            <MenuBar onFileChange={onFileChange}/>
             <Grid container>
                 <Autocomplete
                     fullWidth
@@ -82,6 +93,31 @@ function App() {
             </Grid>
         </ThemeProvider>
     );
+}
+
+class MenuBar extends React.Component<{ onFileChange: any }> {
+    render() {
+        let {onFileChange} = this.props;
+        return (
+            <Box sx={{flexGrow: 1}}>
+                <Toolbar>
+                    <Typography component="div" sx={{flexGrow: 1}}>
+                        <Button variant="contained" component="label" startIcon={<FileOpen/>}>
+                            Open CSV file with names
+                            <input type="file" hidden onChange={onFileChange} accept=".zip, .csv, .tsv"/>
+                        </Button>
+                    </Typography>
+                    <InfoButton/>
+                    <Tooltip title="Open Github project">
+                        <IconButton aria-label="Github repository" target="_blank"
+                                    href="https://github.com/edermengi/aws-navigator">
+                            <GitHub/>
+                        </IconButton>
+                    </Tooltip>
+                </Toolbar>
+            </Box>
+        );
+    }
 }
 
 export default App;
