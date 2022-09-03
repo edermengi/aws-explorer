@@ -150,7 +150,7 @@ if __name__ == '__main__':
                 configure(profile, region)
 
                 for provider in _all_providers():
-                    # include global resource into the first region file
+                    # include global resources only once
                     if rno and provider.is_global:
                         continue
                     if types and provider.res_type not in types:
