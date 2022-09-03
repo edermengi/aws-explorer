@@ -4,3 +4,10 @@ export interface Resource {
     readonly rg: string         // region
     readonly pr: string         // profile
 }
+
+export interface IndexInfo {
+    fileName: string
+    profiles: Array<string>
+    regions: Array<string>
+    totalNames: number
+}

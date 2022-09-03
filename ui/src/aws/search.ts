@@ -25,10 +25,11 @@ function newIndex() {
 
 let index = newIndex();
 
-function loadResources(file: LocalFile) {
-
+function loadResources(file: LocalFile, onLoadComplete: any) {
     index = newIndex();
     let i = 1;
+    let profiles = new Set<string>();
+    let regions = new Set<string>();
     Papa.parse(file, {
         worker: true,
         step: function (row: ParseStepResult<Resource>) {
@@ -37,12 +38,14 @@ function loadResources(file: LocalFile) {
             if (resourceName) {
                 // @ts-ignore
                 index.add({id: i++, rt: resourceType, rn: resourceName, rg: region, pr: profile});
+                profiles.add(profile);
+                regions.add(region);
             }
         },
         complete() {
             console.log("parsed:", i, "records");
             console.log("Searching 'lambda'", index.search('test', {enrich: true, index: "rn", limit: 10}));
-            // return exportToStorage();
+            onLoadComplete({fileName: file, totalNames: i, profiles: profiles, regions: regions});
         }
     });
 }

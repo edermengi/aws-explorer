@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Autocomplete, Chip, createTheme, CssBaseline, Grid, TextField, ThemeProvider} from "@mui/material";
 import {doSearch, loadResources} from "./aws/search";
 import {navigateToResource} from "./aws/navigation";
-import {Resource} from "./aws/interfaces";
+import {IndexInfo, Resource} from "./aws/interfaces";
 import MenuBar from "./components/menu";
 
 
@@ -17,6 +17,12 @@ function App() {
     const [value, setValue] = useState<Resource | null>(null);
     const [inputValue, setInputValue] = useState('');
     const [options, setOptions] = useState<readonly Resource[]>([]);
+    const [indexInfo, setIndexInfo] = useState<IndexInfo>({
+        fileName: '',
+        totalNames: 0,
+        profiles: [],
+        regions: []
+    });
 
     useEffect(
         () => {
@@ -34,15 +40,15 @@ function App() {
         let file = event.target.files[0];
         if (file) {
             console.log(file);
-            loadResources(file);
+            loadResources(file, setIndexInfo);
         }
     };
 
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline/>
-            <MenuBar onFileChange={onFileChange}/>
-            <Grid container>
+            <MenuBar onFileChange={onFileChange} indexInfo={indexInfo} />
+            <Grid container sx={{paddingTop: 2}}>
                 <Autocomplete
                     fullWidth
                     getOptionLabel={(option) =>

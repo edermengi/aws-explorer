@@ -1,13 +1,15 @@
 import React from "react";
-import {Box, Button, IconButton, Toolbar, Tooltip, Typography} from "@mui/material";
+import {Box, Button, Chip, Grid, IconButton, Toolbar, Tooltip, Typography} from "@mui/material";
 import {FileOpen, GitHub} from "@mui/icons-material";
 import InfoButton from "./info";
+import {IndexInfo} from "../aws/interfaces";
 
 type MenuBarProps = {
-    onFileChange: any
+    onFileChange: any;
+    indexInfo: IndexInfo
 };
 
-export default function MenuBar({onFileChange}: MenuBarProps) {
+export default function MenuBar({onFileChange, indexInfo}: MenuBarProps) {
     return (
         <Box sx={{flexGrow: 1}}>
             <Toolbar>
@@ -16,6 +18,7 @@ export default function MenuBar({onFileChange}: MenuBarProps) {
                         Open CSV file with names
                         <input type="file" hidden onChange={onFileChange} accept=".csv"/>
                     </Button>
+                    <span style={{paddingLeft: 10}}>Loaded {indexInfo.totalNames} names</span>
                 </Typography>
                 <InfoButton/>
                 <Tooltip title="Open Github project">
@@ -25,6 +28,23 @@ export default function MenuBar({onFileChange}: MenuBarProps) {
                     </IconButton>
                 </Tooltip>
             </Toolbar>
+            <Box>
+                <Grid spacing={1} container>
+                    <Grid xs={6} item>
+                        Profiles:
+                        {/*{indexInfo.profiles &&*/}
+                        {/*    indexInfo.profiles.map((profile) => {*/}
+                        {/*        return <Chip label={profile} size="small"/>*/}
+                        {/*    })*/}
+                        {/*}*/}
+                    </Grid>
+                    <Grid xs={6} item>
+                        Regions:
+                        <Chip label="eu-west-1" size="small"/>
+                    </Grid>
+                </Grid>
+
+            </Box>
         </Box>
     );
 }
