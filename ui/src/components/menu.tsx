@@ -18,7 +18,7 @@ export default function MenuBar({onFileChange, indexInfo}: MenuBarProps) {
                         Open CSV file with names
                         <input type="file" hidden onChange={onFileChange} accept=".csv"/>
                     </Button>
-                    <span style={{paddingLeft: 10}}>Loaded {indexInfo.totalNames} names</span>
+                    <span style={{paddingLeft: 10}}>{indexInfo.fileName}: {indexInfo.totalNames} names</span>
                 </Typography>
                 <InfoButton/>
                 <Tooltip title="Open Github project">
@@ -30,17 +30,25 @@ export default function MenuBar({onFileChange, indexInfo}: MenuBarProps) {
             </Toolbar>
             <Box>
                 <Grid spacing={1} container>
-                    <Grid xs={6} item>
+                    <Grid xs={1} item>
                         Profiles:
-                        {/*{indexInfo.profiles &&*/}
-                        {/*    indexInfo.profiles.map((profile) => {*/}
-                        {/*        return <Chip label={profile} size="small"/>*/}
-                        {/*    })*/}
-                        {/*}*/}
                     </Grid>
-                    <Grid xs={6} item>
+                    <Grid xs={5} item>
+                        {indexInfo.profiles.length > 0 &&
+                            indexInfo.profiles.map((profile) => {
+                                return <Chip label={profile} size="small"/>
+                            })
+                        }
+                    </Grid>
+                    <Grid xs={1} item>
                         Regions:
-                        <Chip label="eu-west-1" size="small"/>
+                    </Grid>
+                    <Grid xs={5} item>
+                        {indexInfo.regions.length > 0 &&
+                            indexInfo.regions.map((region) => {
+                                return <Chip label={region} size="small"/>
+                            })
+                        }
                     </Grid>
                 </Grid>
 

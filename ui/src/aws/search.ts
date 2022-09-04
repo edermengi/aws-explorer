@@ -25,7 +25,7 @@ function newIndex() {
 
 let index = newIndex();
 
-function loadResources(file: LocalFile, onLoadComplete: any) {
+function loadResources(file: File, onLoadComplete: any) {
     index = newIndex();
     let i = 1;
     let profiles = new Set<string>();
@@ -45,7 +45,12 @@ function loadResources(file: LocalFile, onLoadComplete: any) {
         complete() {
             console.log("parsed:", i, "records");
             console.log("Searching 'lambda'", index.search('test', {enrich: true, index: "rn", limit: 10}));
-            onLoadComplete({fileName: file, totalNames: i, profiles: profiles, regions: regions});
+            onLoadComplete({
+                fileName: file.name,
+                totalNames: i,
+                profiles: Array.from(profiles),
+                regions: Array.from(regions)
+            });
         }
     });
 }
