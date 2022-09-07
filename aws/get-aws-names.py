@@ -10,17 +10,17 @@ import boto3
 
 
 @dataclass
-class Settings:
+class Globals:
     profile: str
     region: str
+    account_id: str = None
+
+    def __post_init__(self):
+        sts = aws_client('sts', self.profile, self.region)
+        self.account_id = sts.get_caller_identity()['Account']
 
 
-_settings: Settings = Settings('', '')
-
-
-def configure(pr: str, rg: str):
-    _settings.profile = pr
-    _settings.region = rg
+_globals: Globals
 
 
 @dataclass
@@ -76,8 +76,8 @@ class ResourceProvider:
         self.token_resp = token_resp
         self.token_req = token_req
         self.list_func = list_func
-        self.profile = _settings.profile
-        self.region = _settings.region
+        self.profile = _globals.profile
+        self.region = _globals.region
         self.list_func_args = list_func_args or {}
         self.client = aws_client(client, self.profile, self.region)
 
@@ -95,6 +95,13 @@ class ResourceProvider:
             if not token:
                 progress.end()
                 break
+
+
+def tag(name, tags: list[dict]):
+    for _tag in tags or []:
+        if _tag.get('Key') == name:
+            return _tag.get('Value')
+    return ''
 
 
 # @formatter:off
@@ -117,8 +124,9 @@ _provider_args = [
     ('api-v2',         0,   'apigatewayv2',    'get_apis',                 'NextToken',                'NextToken',              'Items',                     lambda item: item['ApiId'] + "," + item['Name']),
     ('web-acl',        0,   'wafv2',           'list_web_acls',            'NextMarker',               'NextMarker',             'WebACLs',                   lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
     ('waf-ip-set',     0,   'wafv2',           'list_ip_sets',             'NextMarker',               'NextMarker',             'IPSets',                    lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
-    ('codebuild',      0,   'codebuild',       'list_projects',            'nextToken',                'nextToken',              'projects',                  lambda item: item),
+    ('codebuild',      0,   'codebuild',       'list_projects',            'nextToken',                'nextToken',              'projects',                  lambda item: item + ',' + _globals.account_id),
     ('codepipeline',   0,   'codepipeline',    'list_pipelines',           'nextToken',                'nextToken',              'pipelines',                 lambda item: item['name']),
+    ('subnet',         0,   'ec2',             'describe_subnets',         'NextToken',                'NextToken',              'Subnets',                   lambda item: item['SubnetId'] + "," + tag('Name', item.get('Tags'))),
 ]
 # @formatter:on
 
@@ -149,7 +157,7 @@ if __name__ == '__main__':
         for profile in profiles:
             for rno, region in enumerate(regions):
                 print(f'Processing AWS profile [{profile}] and region [{region}]')
-                configure(profile, region)
+                _globals = Globals(profile, region)
 
                 for provider in _all_providers():
                     # include global resources only once
