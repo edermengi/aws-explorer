@@ -41,6 +41,8 @@ function makeAwsUrl(r: Resource | null): string {
             return `https://${r.rg}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${r.rn}/view?region=${r.rg}`;
         case 'subnet':
             return `https://${r.rg}.console.aws.amazon.com/vpc/home?region=${r.rg}#SubnetDetails:subnetId=${name0(r)}`;
+        case 'ec2':
+            return `https://${r.rg}.console.aws.amazon.com/ec2/home?region=${r.rg}#InstanceDetails:instanceId=${name0(r)}`;
     }
     return ``;
 }
