@@ -118,6 +118,7 @@ _provider_args = [
     ('web-acl',        0,   'wafv2',           'list_web_acls',            'NextMarker',               'NextMarker',             'WebACLs',                   lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
     ('waf-ip-set',     0,   'wafv2',           'list_ip_sets',             'NextMarker',               'NextMarker',             'IPSets',                    lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
     ('codebuild',      0,   'codebuild',       'list_projects',            'nextToken',                'nextToken',              'projects',                  lambda item: item),
+    ('codepipeline',   0,   'codepipeline',    'list_pipelines',           'nextToken',                'nextToken',              'pipelines',                 lambda item: item['name']),
 ]
 # @formatter:on
 
