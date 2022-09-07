@@ -33,7 +33,6 @@ function loadResources(file: File, onLoadComplete: any) {
             // @ts-ignore
             const [profile, region, resourceType, resourceName] = row.data;
             if (resourceName) {
-                // @ts-ignore
                 index.add({
                     id: i,
                     full_name: `${resourceName} ${resourceType}`,
