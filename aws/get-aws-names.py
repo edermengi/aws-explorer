@@ -117,6 +117,7 @@ _provider_args = [
     ('api-v2',         0,   'apigatewayv2',    'get_apis',                 'NextToken',                'NextToken',              'Items',                     lambda item: item['ApiId'] + "," + item['Name']),
     ('web-acl',        0,   'wafv2',           'list_web_acls',            'NextMarker',               'NextMarker',             'WebACLs',                   lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
     ('waf-ip-set',     0,   'wafv2',           'list_ip_sets',             'NextMarker',               'NextMarker',             'IPSets',                    lambda item: item['Name'] + "," + item['Id'], {'Scope': 'REGIONAL'}),
+    ('codebuild',      0,   'codebuild',       'list_projects',            'nextToken',                'nextToken',              'projects',                  lambda item: item),
 ]
 # @formatter:on
 
