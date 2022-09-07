@@ -1,7 +1,5 @@
-// @ts-ignore
-import Papa, {LocalFile, ParseResult, ParseStepResult} from "papaparse";
-// @ts-ignore
-import {Document} from 'flexsearch';
+import Papa, {ParseStepResult} from "papaparse";
+import {Document, SimpleDocumentSearchResultSetUnit} from 'flexsearch';
 import {Resource} from "./interfaces";
 
 function newIndex() {
@@ -9,27 +7,26 @@ function newIndex() {
         tokenize: 'full',
         document: {
             id: 'id',
-            store: true,
+            store: false,
             index: [
                 {
-                    field: "rt"
-                },
-                {
-                    field: "rn",
+                    field: "full_name"
                 }
             ],
-            tag: "rg"
+            tag: "rt_pr_rg"
         }
     });
 }
 
 let index = newIndex();
+const resources: Array<Resource> = [];
 
 function loadResources(file: File, onLoadComplete: any) {
     index = newIndex();
-    let i = 1;
+    let i = 0;
     let profiles = new Set<string>();
     let regions = new Set<string>();
+    resources.length = 0;
     Papa.parse(file, {
         worker: true,
         step: function (row: ParseStepResult<Resource>) {
@@ -37,14 +34,19 @@ function loadResources(file: File, onLoadComplete: any) {
             const [profile, region, resourceType, resourceName] = row.data;
             if (resourceName) {
                 // @ts-ignore
-                index.add({id: i++, rt: resourceType, rn: resourceName, rg: region, pr: profile});
+                index.add({
+                    id: i,
+                    full_name: `${resourceName} ${resourceType}`,
+                    rt_pr_rg: [resourceType, profile, region]
+                });
                 profiles.add(profile);
                 regions.add(region);
+                resources[i++] = {rt: resourceType, rn: resourceName, rg: region, pr: profile};
             }
         },
         complete() {
             console.log("parsed:", i, "records");
-            console.log("Searching 'lambda'", index.search('test', {enrich: true, index: "rn", limit: 10}));
+            console.log("Searching 'lambda'", index.search('lambda', {index: "full_name", limit: 10}));
             onLoadComplete({
                 fileName: file.name,
                 totalNames: i,
@@ -57,27 +59,20 @@ function loadResources(file: File, onLoadComplete: any) {
 
 
 function doSearch(query: string): Resource[] {
-    const response = index.search(query, 20, {enrich: true, index: "rn", limit: 20});
+    const response: SimpleDocumentSearchResultSetUnit[] =
+        index.search(query, 20, {index: "full_name", limit: 20});
+
     if (response.length > 0) {
-        const docs: Object[] = response[0].result;
+        const docs = response[0].result;
         console.log('Found', docs.length, 'results for ', query);
-        return docs.map((doc) => {
+        return docs.map((id) => {
             // @ts-ignore
-            return {rt: doc.doc.rt, rn: doc.doc.rn, rg: doc.doc.rg, pr: doc.doc.pr};
+            return resources[id];
         });
     }
     return [];
 }
 
-async function exportToStorage() {
-    return index.export(function (key, data) {
-        console.log(key);
-        return new Promise(function (resolve) {
-            // @ts-ignore
-            resolve();
-        });
-    });
-}
 
 export {
     doSearch,
