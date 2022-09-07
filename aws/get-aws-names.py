@@ -128,6 +128,7 @@ _provider_args = [
     ('codepipeline',   0,   'codepipeline',    'list_pipelines',           'nextToken',                'nextToken',              'pipelines',                 lambda item: item['name']),
     ('subnet',         0,   'ec2',             'describe_subnets',         'NextToken',                'NextToken',              'Subnets',                   lambda item: item['SubnetId'] + "," + tag('Name', item.get('Tags'))),
     ('ec2',            0,   'ec2',             'describe_instances',       'NextToken',                'NextToken',              'Reservations',              lambda item: item['Instances'][0]['InstanceId'] + "," + tag('Name', item['Instances'][0].get('Tags'))),
+    ('role',           1,   'iam',             'list_roles',               'Marker',                   'Marker',                 'Roles',                     lambda item: item['RoleName']),
 ]
 # @formatter:on
 

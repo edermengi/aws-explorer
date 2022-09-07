@@ -71,7 +71,7 @@ function App() {
                     }}
                     renderInput={(params) => <TextField {...params} label="AWS resource name"/>}
                     renderOption={(props, option) => (
-                        <li {...props} key={option.rn + option.rt + option.rg}>
+                        <li {...props} key={option.rn + option.rt + option.rg + option.pr}>
                             {option.rn}
                             <div style={{marginLeft: 'auto', marginRight: '0'}}>
                                 <Chip label={option.rt} size="small"></Chip>
