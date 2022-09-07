@@ -36,7 +36,7 @@ export default function MenuBar({onFileChange, indexInfo}: MenuBarProps) {
                     <Grid xs={5} item>
                         {indexInfo.profiles.length > 0 &&
                             indexInfo.profiles.map((profile) => {
-                                return <Chip label={profile} size="small"/>
+                                return <Chip key={profile} label={profile} size="small"/>
                             })
                         }
                     </Grid>
@@ -46,7 +46,7 @@ export default function MenuBar({onFileChange, indexInfo}: MenuBarProps) {
                     <Grid xs={5} item>
                         {indexInfo.regions.length > 0 &&
                             indexInfo.regions.map((region) => {
-                                return <Chip label={region} size="small"/>
+                                return <Chip key={region} label={region} size="small"/>
                             })
                         }
                     </Grid>
