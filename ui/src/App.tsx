@@ -73,7 +73,7 @@ function App() {
                     }}
                     renderInput={(params) => <TextField {...params} label="AWS resource name"/>}
                     renderOption={(props, option, {inputValue}) => {
-                        const matches = match(option.rn, inputValue);
+                        const matches = match(option.rn, inputValue, {insideWords: true});
                         const parts = parse(option.rn, matches);
 
                         return (<li {...props} key={option.rn + option.rt + option.rg + option.pr}>
