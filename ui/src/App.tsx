@@ -4,6 +4,8 @@ import {doSearch, loadResources} from "./aws/search";
 import {navigateToResource} from "./aws/navigation";
 import {IndexInfo, Resource} from "./aws/interfaces";
 import MenuBar from "./components/menu";
+import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match';
 
 
 const darkTheme = createTheme({
@@ -47,7 +49,7 @@ function App() {
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline/>
-            <MenuBar onFileChange={onFileChange} indexInfo={indexInfo} />
+            <MenuBar onFileChange={onFileChange} indexInfo={indexInfo}/>
             <Grid container sx={{paddingTop: 2}}>
                 <Autocomplete
                     fullWidth
@@ -70,15 +72,22 @@ function App() {
                         setInputValue(newInputValue);
                     }}
                     renderInput={(params) => <TextField {...params} label="AWS resource name"/>}
-                    renderOption={(props, option) => (
-                        <li {...props} key={option.rn + option.rt + option.rg + option.pr}>
-                            {option.rn}
+                    renderOption={(props, option, {inputValue}) => {
+                        const matches = match(option.rn, inputValue);
+                        const parts = parse(option.rn, matches);
+
+                        return (<li {...props} key={option.rn + option.rt + option.rg + option.pr}>
+                            {parts.map((part, index) => (
+                                <span key={index} style={{color: part.highlight ? "lightcoral" : "white",}}>
+                                {part.text}
+                                </span>
+                            ))}
                             <div style={{marginLeft: 'auto', marginRight: '0'}}>
                                 <Chip label={option.rt} size="small"></Chip>
                                 <Chip label={option.rg} size="small"></Chip>
                             </div>
-                        </li>
-                    )}
+                        </li>);
+                    }}
                 />
 
             </Grid>
