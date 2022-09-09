@@ -3,11 +3,20 @@ import {Page} from "./interfaces";
 
 
 const base = "https://console.aws.amazon.com";
+// @formatter:off
 const pages: Array<Page> = [
     {rn: "Console Home", url: `${base}/console/home`},
-    {rn: "Lambda ", url: `${base}/lambda/home?region=eu-west-1#/functions`},
-    {rn: "Lambda Dashboard", url: `${base}/lambda/home?region=eu-west-1#/discover`}
+    {rn: "Lambda ", url: `${base}/lambda/home#/functions`},
+    {rn: "Lambda / Dashboard", url: `${base}/lambda/home#/discover`},
+    {rn: "Lambda / Applications", url: `${base}/lambda/home#/applications`},
+    {rn: "Lambda / Functions", url: `${base}/lambda/home#/functions`},
+    {rn: "Lambda / Additional resources / Code signing configurations", url: `${base}/lambda/home#/code-signing-configurations`},
+    {rn: "Lambda / Additional resources / Layers", url: `${base}/lambda/home#/layers`},
+    {rn: "S3", url: `${base}/s3/buckets`},
+    {rn: "S3 / Buckets", url: `${base}/s3/buckets`},
+    {rn: "S3 / Access Points", url: `${base}/s3/ap`},
 ];
+// @formatter:on
 
 let index = loadPageIndex();
 
