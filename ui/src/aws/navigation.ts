@@ -1,4 +1,4 @@
-import {Resource} from "./interfaces";
+import {Page, Resource} from "./interfaces";
 
 function makeAwsUrl(r: Resource | null): string {
     console.log(r);
@@ -60,6 +60,11 @@ function navigateToResource(r: Resource) {
     window.open(makeAwsUrl(r), '_blank')?.focus();
 }
 
+function navigateToPage(p: Page) {
+    window.open(p.url, '_blank')?.focus();
+}
+
 export {
-    navigateToResource
+    navigateToResource,
+    navigateToPage
 };

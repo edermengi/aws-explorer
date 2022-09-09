@@ -57,7 +57,7 @@ function loadResources(file: File, onLoadComplete: any) {
 }
 
 
-function doSearch(query: string): Resource[] {
+function searchResources(query: string): Resource[] {
     const response: SimpleDocumentSearchResultSetUnit[] =
         index.search(query, 20, {index: "full_name", limit: 20});
 
@@ -74,6 +74,6 @@ function doSearch(query: string): Resource[] {
 
 
 export {
-    doSearch,
+    searchResources,
     loadResources
 };
