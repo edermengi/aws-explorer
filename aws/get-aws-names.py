@@ -129,6 +129,7 @@ _provider_args = [
     ('subnet',         0,   'ec2',             'describe_subnets',         'NextToken',                'NextToken',              'Subnets',                   lambda item: item['SubnetId'] + "," + tag('Name', item.get('Tags'))),
     ('ec2',            0,   'ec2',             'describe_instances',       'NextToken',                'NextToken',              'Reservations',              lambda item: item['Instances'][0]['InstanceId'] + "," + tag('Name', item['Instances'][0].get('Tags'))),
     ('role',           1,   'iam',             'list_roles',               'Marker',                   'Marker',                 'Roles',                     lambda item: item['RoleName']),
+    ('event-rule',     0,   'events',          'list_rules',               'NextToken',                'NextToken',              'Rules',                     lambda item: item['Name']),
 ]
 # @formatter:on
 

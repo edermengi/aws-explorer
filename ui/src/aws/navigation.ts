@@ -45,6 +45,8 @@ function makeAwsUrl(r: Resource | null): string {
             return `https://${r.rg}.console.aws.amazon.com/ec2/home?region=${r.rg}#InstanceDetails:instanceId=${name0(r)}`;
         case 'role':
             return `https://us-east-1.console.aws.amazon.com/iamv2/home?region=eu-west-1#/roles/details/${r.rn}?section=permissions`;
+        case 'event-rule':
+            return `https://${r.rg}.console.aws.amazon.com/events/home?region=${r.rg}#/eventbus/default/rules/${name0(r)}`;
     }
     return ``;
 }
