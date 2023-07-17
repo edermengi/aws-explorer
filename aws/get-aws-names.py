@@ -154,7 +154,7 @@ if __name__ == '__main__':
     types = args.types
     output_file = args.output_file
 
-    with open(output_file, 'w', newline='') as f:
+    with open(output_file, 'a', newline='') as f:
         fieldnames = ['profile', 'region', 'type', 'name']
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         for profile in profiles:
