@@ -4,7 +4,7 @@ import datetime
 import functools
 from dataclasses import asdict
 from dataclasses import dataclass
-from typing import Iterator, List
+from typing import Iterator, List, Dict
 
 import boto3
 
@@ -97,7 +97,7 @@ class ResourceProvider:
                 break
 
 
-def tag(name, tags: list[dict]):
+def tag(name, tags: List[Dict]):
     for _tag in tags or []:
         if _tag.get('Key') == name:
             return _tag.get('Value')
