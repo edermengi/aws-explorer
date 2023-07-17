@@ -31,12 +31,12 @@ class Resource:
     name: str
 
 
-@functools.cache
+@functools.lru_cache
 def session(profile_name: str):
     return boto3.Session(profile_name=profile_name)
 
 
-@functools.cache
+@functools.lru_cache
 def aws_client(client: str, profile_name: str, region_name: str):
     return session(profile_name).client(client, region_name=region_name)
 
