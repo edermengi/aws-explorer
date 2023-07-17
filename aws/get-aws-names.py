@@ -33,7 +33,7 @@ class Resource:
 
 @functools.lru_cache
 def session(profile_name: str):
-    return boto3.Session(profile_name=profile_name)
+    return boto3.Session()
 
 
 @functools.lru_cache
