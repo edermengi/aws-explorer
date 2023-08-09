@@ -43,15 +43,16 @@ function App() {
             setOptions(results);
         },
         [inputValue]);
-    useEffect(() => {
-            if (value) {
-                if (isResource(value)) {
-                    navigateToResource(value as Resource);
-                } else {
-                    navigateToPage(value as Page);
-                }
+    let navigate = () => {
+        if (value) {
+            if (isResource(value)) {
+                navigateToResource(value as Resource);
+            } else {
+                navigateToPage(value as Page);
             }
-        },
+        }
+    };
+    useEffect(navigate,
         [value]);
 
     const onFileChange = (event: any) => {
@@ -83,6 +84,11 @@ function App() {
                     }}
                     onInputChange={(event, newInputValue) => {
                         setInputValue(newInputValue);
+                    }}
+                    onClose={(event, reason) => {
+                        if (reason == 'selectOption' && inputValue === value?.rn) {
+                            navigate();
+                        }
                     }}
                     renderInput={(params) => <TextField {...params} label="AWS resource name"/>}
                     renderOption={(props, option, {inputValue}) => {
