@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/aws-navigator/static/js/main.1f8a5a0a.js",
+    "main.js": "/aws-navigator/static/js/main.5ab1e7c2.js",
     "index.html": "/aws-navigator/index.html",
-    "main.1f8a5a0a.js.map": "/aws-navigator/static/js/main.1f8a5a0a.js.map"
+    "main.5ab1e7c2.js.map": "/aws-navigator/static/js/main.5ab1e7c2.js.map"
   },
   "entrypoints": [
-    "static/js/main.1f8a5a0a.js"
+    "static/js/main.5ab1e7c2.js"
   ]
 }
